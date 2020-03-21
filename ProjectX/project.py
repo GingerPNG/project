@@ -15,32 +15,45 @@ def index():
 
 
 @app.route('/movies')
-def movies():
+def moviesPict():
     url = "https://afisha.tut.by/day/2019/10/24"  
     req = requests.get(url)
     page = req.text
     soup = BeautifulSoup(page,"lxml")
-    catalog = []
     ivents = soup.findAll('div', attrs= {'class' : 'm-b-border tab-pane active'})
     for films in ivents:
-        films = films.findAll('a', attrs= {'class' : 'name'})
-        for film in films:
-            film = film.text
-            catalog.append(film)
-    catalog = tuple(catalog)
-    return render_template ('movies.html' , mov = catalog)
+        # films = films.findAll('a', attrs= {'class' : 'media' }).find('img').get('src')
+        films = films.findAll('a', attrs= {'class' : 'media' })
+        Allpict = []
+        for pict in films:
+            pict = pict.find('img').get('src')
+            Allpict.append(pict)
+    for names in ivents:
+        urls = []
+        names = names.findAll('a', attrs= {'class' : 'name'})
+        for names2 in names:
+            names2 = names2.get('href')
+            urls.append(names2)
+    inf = dict(zip(Allpict,urls))
+    return render_template ('movies.html' , mov = inf)
 
-@app.route('/courses')
+    
+@app.route('/courses', methods=['post', 'get'])
 def valyta():
-    url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0"
-    all_courses = requests.get(url).json()
+    url = "http://www.nbrb.by/api/exrates/rates?ondate="
+    date = " "
+    if request.method == 'POST':
+        date = request.form.get('date') 
+    periodicity = "&periodicity=0"
+    DateUrl = url + date + periodicity
+    s = requests.get(DateUrl).json()
     courses = []
-    for k in all_courses:
+    for k in s:
         n = k["Cur_Name"],k["Cur_OfficialRate"]
         courses.append(n)
     courses = dict(courses)
     return render_template('courses.html', sps =courses)
-   
+
 
 @app.route('/weather', methods=['post', 'get'])
 def Get_weather():
