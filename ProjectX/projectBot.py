@@ -59,7 +59,7 @@ def handle_loc(message):
     lat = (message.location.latitude)
     lon = (message.location.longitude)
 
-    API_KEY = 'AIzaSyCIC10I-ZUU4UIeywHWJIzIxlECyCRc_CQ'
+    API_KEY = ''
     google_places = GooglePlaces(API_KEY)
     query_result = google_places.nearby_search( lat_lng= {'lat' : lat, 'lng' : lon} ,radius = 1000, types= [types.TYPE_FOOD])
     bot.send_message(message.chat.id,'Ма возле дома:')
